@@ -8,7 +8,8 @@ A Delphi/pascal based trojan RAT(2014) which uses [reverse connection](https://e
 ## Features:
 - Reverse connection
 - Cpanel WEB (PHP)
-- Keylogger
+- Keylogger by Timer (method 1)
+- Keylogger by Hooking keys (method 2)
 - Cryptography (encrypt text and files)
 - USB Autoinfection
 - File and Process Manager
@@ -27,10 +28,13 @@ When sending the next images to the server, the client compares with the pixels 
 sending only what has changed </pre>
 
 ## *Libs*:
+- iconchanger > To change applications icon.
+- INDY components > Used to internet access.
 - sndkey32.pas > Used to simulate keyboard keys.
 - StreamManager.pas > Used to capture the screen, and do the pixel comparison.
-- iconchanger > To change applications icon.
-- KeyHook > Used to build "DLL" to get typed keys (method 2) without using the timer
+- KeyHook > Used to build "DLL" to get typed keys (method 2) without using the timer.
+- DCPcrypt > Cryptographic Component Library.
+- dclsockets190.bpl > TClientSocket and TServerSocket components.
 
 ## Screenshots
 
