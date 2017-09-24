@@ -17,13 +17,19 @@ A Delphi/pascal based trojan RAT(2014) which uses [reverse connection](https://e
 
 ## How does the remote screen work?
 The Client connects to the server.
+
 When connecting the first socket, it then connects the other 2 sockets.
+
 The first Socket transfers messages, position and the mouse click.
+
 The server requests the first image.
 
 Client capture first screen (This is done in Bitmap, 8bit to reduce size)
+
 The first image is sent, always compressed by zLib and Lh5.
+
 The image is stored in the client memory.
+
 When sending the next images to the server, the client compares with the pixels of the previous image, sending only what has changed.
 
 ## *Libs*:
