@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{97E7F693-D6BE-4EB5-AE46-91C45BEF908E}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Servidor\spyAngelServer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Cliente\PortableAntivirus.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="spyAngelServer">
+        <MSBuild Projects="Servidor\spyAngelServer.dproj"/>
+    </Target>
+    <Target Name="spyAngelServer:Clean">
+        <MSBuild Projects="Servidor\spyAngelServer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="spyAngelServer:Make">
+        <MSBuild Projects="Servidor\spyAngelServer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PortableAntivirus">
+        <MSBuild Projects="Cliente\PortableAntivirus.dproj"/>
+    </Target>
+    <Target Name="PortableAntivirus:Clean">
+        <MSBuild Projects="Cliente\PortableAntivirus.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PortableAntivirus:Make">
+        <MSBuild Projects="Cliente\PortableAntivirus.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="spyAngelServer;PortableAntivirus"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="spyAngelServer:Clean;PortableAntivirus:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="spyAngelServer:Make;PortableAntivirus:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
