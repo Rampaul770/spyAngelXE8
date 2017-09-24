@@ -1,9 +1,9 @@
 # spyAngelXE8
 A Delphi/pascal based trojan RAT(2014) which uses [reverse connection](https://en.wikipedia.org/wiki/Reverse_connection), CPanel server and Application server.
 
-**Undetectable at the time by AVs.
+**Undetectable until december 2015 by AVs.
 
-(***Deprecated/Outdated*)
+***Deprecated/Outdated*
 
 ## Features:
 - Reverse connection
@@ -16,21 +16,15 @@ A Delphi/pascal based trojan RAT(2014) which uses [reverse connection](https://e
 - Webcam / Remote Desktop
 
 ## How does the remote screen work?
-The Client connects to the server.
-
+<pre>The Client connects to the server.
 When connecting the first socket, it then connects the other 2 sockets.
-
 The first Socket transfers messages, position and the mouse click.
-
 The server requests the first image.
-
-Client capture first screen (This is done in Bitmap, 8bit to reduce size)
-
+Client capture first printscreen (This is done in Bitmap, 8bit to reduce size)
 The first image is sent, always compressed by zLib and Lh5.
-
 The image is stored in the client memory.
-
-When sending the next images to the server, the client compares with the pixels of the previous image, sending only what has changed.
+When sending the next images to the server, the client compares with the pixels of the previous image, 
+sending only what has changed </pre>
 
 ## *Libs*:
 - sndkey32.pas > Used to simulate keyboard keys.
